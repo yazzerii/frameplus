@@ -1,47 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>إضافة عميل</title>
+  <title>نموذج العميل</title>
+  <style>
+    body {
+      background-color: #000; /* خلفية سوداء */
+      color: #fff; /* نص أبيض */
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    form {
+      background-color: #111;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+      width: 300px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    input {
+      background-color: #222;
+      color: #fff;
+    }
+
+    button {
+      background-color: #fff;
+      color: #000;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #ddd;
+    }
+  </style>
 </head>
 <body>
-  <h2>أدخل معلومات العميل</h2>
-  <form id="clientForm">
-    <input type="text" id="id" placeholder="ID" required><br>
-    <input type="text" id="name" placeholder="الاسم الكامل" required><br>
-    <input type="text" id="phone" placeholder="رقم الهاتف" required><br>
-    <input type="text" id="service" placeholder="الخدمة" required><br>
-    <input type="text" id="price" placeholder="السعر" required><br>
-    <textarea id="notes" placeholder="ملاحظات"></textarea><br>
-    <button type="submit">أرسل</button>
+
+  <form id="client-form">
+    <h3 style="text-align: center;">إضافة عميل</h3>
+    <input type="text" id="name" placeholder="اسم العميل" required>
+    <input type="text" id="phone" placeholder="رقم الهاتف" required>
+    <input type="text" id="service" placeholder="الخدمة" required>
+    <input type="text" id="price" placeholder="السعر" required>
+    <button type="submit">إرسال</button>
   </form>
 
   <script>
-    document.getElementById("clientForm").addEventListener("submit", function(e) {
+    document.getElementById("client-form").addEventListener("submit", function(e) {
       e.preventDefault();
 
-      const url = "https://v1.nocodeapi.com/yazzer/google_sheets/CmetTcvNhUtoPCjk"; // استبدل هذا برابط Google Script API تاعك
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      const service = document.getElementById("service").value;
+      const price = document.getElementById("price").value;
 
-      const data = {
-        id: document.getElementById("id").value,
-        name: document.getElementById("name").value,
-        phone: document.getElementById("phone").value,
-        service: document.getElementById("service").value,
-        price: document.getElementById("price").value,
-        notes: document.getElementById("notes").value
-      };
-
-      fetch(url, {
+      fetch("https://v1.nocodeapi.com/YOUR_USERNAME/google_sheets/YOUR_API_KEY/insert?tabId=Sheet1", {
         method: "POST",
-        body: JSON.stringify(data),
         headers: {
           "Content-Type": "application/json"
-        }
+        },
+        body: JSON.stringify([
+          [name, phone, service, price, new Date().toLocaleString()]
+        ])
       })
-      .then(res => res.text())
-      .then(response => alert("تم الإرسال بنجاح ✅"))
-      .catch(error => alert("خطأ في الإرسال ❌"));
+      .then(res => res.json())
+      .then(data => console.log("✅ تم الإرسال:", data))
+      .catch(err => console.error("❌ فشل:", err));
     });
   </script>
+
 </body>
 </html>
