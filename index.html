@@ -1,88 +1,137 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>نموذج العميل</title>
+  <title>Client Form</title>
   <style>
     body {
-      background-color: #000; /* خلفية سوداء */
-      color: #fff; /* نص أبيض */
+      background-color: #000;
+      color: #fff;
       font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 0;
     }
 
     form {
       background-color: #111;
       padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
-      width: 300px;
+      border-radius: 10px;
+      width: 350px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
     }
 
-    input, button {
+    label {
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 5px;
+    }
+
+    input, select, textarea {
       width: 100%;
       padding: 10px;
-      margin-top: 12px;
       border: none;
-      border-radius: 6px;
-      font-size: 16px;
-    }
-
-    input {
+      border-radius: 5px;
+      margin-bottom: 10px;
       background-color: #222;
-      color: #fff;
+      color: white;
     }
 
     button {
+      width: 100%;
+      padding: 10px;
       background-color: #fff;
       color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
-      transition: 0.3s;
     }
 
-    button:hover {
-      background-color: #ddd;
+    .success, .error {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .success {
+      color: #0f0;
+    }
+
+    .error {
+      color: #f00;
     }
   </style>
 </head>
 <body>
 
-  <form id="client-form">
-    <h3 style="text-align: center;">إضافة عميل</h3>
-    <input type="text" id="name" placeholder="اسم العميل" required>
-    <input type="text" id="phone" placeholder="رقم الهاتف" required>
-    <input type="text" id="service" placeholder="الخدمة" required>
-    <input type="text" id="price" placeholder="السعر" required>
-    <button type="submit">إرسال</button>
-  </form>
+<form id="clientForm">
+  <h2>Add Client</h2>
+  <label for="date">Date</label>
+  <input type="date" id="date" required>
 
-  <script>
-    document.getElementById("client-form").addEventListener("submit", function(e) {
-      e.preventDefault();
+  <label for="name">Name</label>
+  <input type="text" id="name" required>
 
-      const name = document.getElementById("name").value;
-      const phone = document.getElementById("phone").value;
-      const service = document.getElementById("service").value;
-      const price = document.getElementById("price").value;
+  <label for="phone">Phone</label>
+  <input type="tel" id="phone" required>
 
-      fetch("https://v1.nocodeapi.com/yazzer/google_sheets/HAPactSIWjwrjMwJ?tabId=Sheet1", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify([
-          [name, phone, service, price, new Date().toLocaleString()]
-        ])
-      })
-      .then(res => res.json())
-      .then(data => console.log("✅ تم الإرسال:", data))
-      .catch(err => console.error("❌ فشل:", err));
-    });
-  </script>
+  <label for="service">Service</label>
+  <input type="text" id="service" required>
+
+  <label for="price">Price</label>
+  <input type="number" id="price" required>
+
+  <label for="notes">Notes</label>
+  <textarea id="notes"></textarea>
+
+  <label for="status">Status</label>
+  <select id="status">
+    <option value="Not Started">Not Started</option>
+    <option value="In Progress">In Progress</option>
+    <option value="Completed">Completed</option>
+    <option value="Cancelled">Cancelled</option>
+  </select>
+
+  <button type="submit">Submit</button>
+  <div id="message"></div>
+</form>
+
+<script>
+  const form = document.getElementById('clientForm');
+  const message = document.getElementById('message');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const data = {
+      date: document.getElementById('date').value,
+      name: document.getElementById('name').value,
+      phone: document.getElementById('phone').value,
+      service: document.getElementById('service').value,
+      price: document.getElementById('price').value,
+      notes: document.getElementById('notes').value,
+      status: document.getElementById('status').value,
+    };
+
+    try {
+      const res = await fetch('https://v1.nocodeapi.com/yazzer/google_sheets/HAPactSIWjwrjMwJ?tabId=Sheet1', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify([Object.values(data)])
+      });
+
+      if (res.ok) {
+        message.innerHTML = '<div class="success">Client added successfully!</div>';
+        form.reset();
+      } else {
+        message.innerHTML = '<div class="error">Failed to send data.</div>';
+      }
+    } catch (err) {
+      message.innerHTML = '<div class="error">Error: ' + err.message + '</div>';
+    }
+  });
+</script>
 
 </body>
 </html>
